@@ -1,0 +1,4 @@
+reports/
+*.xwd
+*.pyc
+__pycache__/

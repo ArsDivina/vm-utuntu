@@ -1,0 +1,17 @@
+services:
+  ubchrome:
+    image: dockerhubatbasrco/ubchrome:${UBCHROME_VERSION:-latest}
+    platform: linux/amd64
+    ports:
+      - "3010-3012:3000"  # Each instance gets a unique host port (3010, 3011, 3012)
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - SUBFOLDER=/
+      - TITLE=Ubuntu Chrome Desktop
+    shm_size: 2g
+    restart: unless-stopped
+    mem_limit: 2g
+    cpus: 1.0
+
