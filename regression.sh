@@ -94,14 +94,16 @@ log "═════════════════════════
 if [[ "$SKIP_BUILD" == false ]]; then
   hdr "► BUILD"
   log "Building ${TAG}..."
-  docker build \
+  docker buildx build \
+    --platform linux/amd64 \
+    --load \
     -t "$LOCAL_IMG" \
     -t "${REGISTRY}:${TAG}" \
     -t "${REGISTRY}:latest" \
     --label "org.opencontainers.image.version=${VERSION}" \
     --label "org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
     . 2>&1 | tail -5
-  log "Build complete"
+  log "Build complete (linux/amd64 loaded locally)"
 else
   docker tag "$LOCAL_IMG" "${REGISTRY}:${TAG}" 2>/dev/null || true
   log "Skipped build — using existing local image"

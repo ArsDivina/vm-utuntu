@@ -52,16 +52,19 @@ log "═════════════════════════
 # ── build ──────────────────────────────────────────────────────────────────────
 if [[ "$SKIP_BUILD" == false ]]; then
   log "Building image..."
-  docker build \
-    -t "ubuntu-chrome-desktop:local" \
+  docker buildx build \
+    --platform linux/amd64 \
     -t "${REGISTRY}:${TAG}" \
     -t "${REGISTRY}:latest" \
     --label "org.opencontainers.image.version=${VERSION}" \
     --label "org.opencontainers.image.created=$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
     --label "org.opencontainers.image.title=ubchrome" \
     --label "org.opencontainers.image.description=Ubuntu XFCE + Chrome .deb + Claude Code + Codex CLI + Gemini CLI" \
+    --push \
     .
-  log "Build complete: ${REGISTRY}:${TAG}"
+  log "Build + push complete: ${REGISTRY}:${TAG}"
+  # buildx --push handles the push step — skip the separate push block
+  SKIP_PUSH=true
 else
   # Still apply version tags to the existing local image
   docker tag ubuntu-chrome-desktop:local "${REGISTRY}:${TAG}"
