@@ -21,6 +21,19 @@ RUN apt-get update && apt-get install -y curl --no-install-recommends \
       @google/gemini-cli \
   && npm cache clean --force
 
+# Catalyst Edge Node — runtime deps pre-installed at /app/edge/node_modules
+# Source is bind-mounted at /app/edge/src at runtime from the darkfleet repo
+RUN mkdir -p /app/edge /var/lib/catalyst-edge/sessions \
+  && cd /app/edge \
+  && npm init -y \
+  && npm install --save \
+      express@^4.18.2 \
+      uuid@^9.0.1 \
+      ws@^8.17.0 \
+      ioredis@^5.3.2 \
+  && npm cache clean --force \
+  && chmod 700 /var/lib/catalyst-edge
+
 # Pre-create config dirs so CLIs don't error on first run before volume mounts
 # webtop maps /config as the home volume — we seed the structure here
 RUN mkdir -p /config/.gemini \
@@ -36,4 +49,5 @@ RUN echo "ubchrome $(cat /etc/os-release | grep PRETTY_NAME | cut -d= -f2 | tr -
   && echo "Claude: $(claude --version 2>&1 | head -1)" >> /version.txt \
   && echo "Codex:  $(codex --version 2>&1 | head -1)" >> /version.txt \
   && echo "Gemini: $(gemini --version 2>&1 | head -1)" >> /version.txt \
+  && echo "Edge:   deps installed (express uuid ws ioredis) — src bind-mounted at runtime" >> /version.txt \
   && cat /version.txt

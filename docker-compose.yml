@@ -10,8 +10,20 @@ services:
       - TZ=America/New_York
       - SUBFOLDER=/
       - TITLE=Ubuntu Chrome Desktop
+      # Catalyst Edge Node config — set these to activate the edge runtime
+      - EDGE_ID=${EDGE_ID:-}
+      - ORG_ID=${ORG_ID:-}
+      - DP_URL=${DP_URL:-}
+      - BOOTSTRAP_SECRET=${BOOTSTRAP_SECRET:-}   # one-time first-boot only; remove after
+    volumes:
+      # Edge source — bind-mount from darkfleet repo checkout on the host
+      - ${DARKFLEET_PATH:-/opt/darkfleet}/catalyst/bridge/src:/app/edge/src:ro
+      # Edge spool — persists session checkpoints across container restarts
+      - catalyst-edge-spool:/var/lib/catalyst-edge
     shm_size: 2g
     restart: unless-stopped
     mem_limit: 2g
     cpus: 1.0
 
+volumes:
+  catalyst-edge-spool:
